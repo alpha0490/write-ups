@@ -1,0 +1,98 @@
+My first write-up(Attackdefense labs 	- S3 Basics)
+
+We are provided with the Access Id and Secret Id which are sought to be compromised and the exposed S3 endpoint should be located at the IP address 192.X.Y.3. 
+
+
+First I would configure the AWS CLI with the given credentials. I always prefer to configure with a particular profile.
+
+AWS configure --profile basics
+
+1. Identify the S3 Endpoint.
+check your ip with ip r. Then run nmap on the exposed s3.
+nmap -sV 192.X.Y.3
+
+you can see that there is a port(9000) open 
+
+
+2. List all the buckets owned by the current user.
+
+We are not connected to the internet here. We have to provide the endpoint with the - s3 ls qurey
+
+# aws --enpoint http://192.X.Y.3:9000 s3 ls --profile basics
+output
+2019-09-11 01:27:41 hello-world
+2019-09-10 20:42:53 private
+2019-09-11 01:20:38 public
+2019-09-11 01:22:52 welcome
+
+or
+# aws --endpoint http://192.x.Y.3:9000 s3api list-buckets --profile basics  (output will be in JSON format)    
+
+
+
+3. List all the files stored on the S3 Bucket "hello-world".
+
+# aws --endpoint http://192.X.Y.3:9000 s3 ls s3://hello-world --recursive --profile basics(there is no need of "s3://:" still I included, idk) 
+output
+2019-09-11 00:29:55         33 flag
+2019-09-11 01:27:41     145374 wallpaper.jpg
+2019-09-11 00:30:59         35 welcome
+or
+
+# aws --endpoint http://192.19.223.3:9000 s3api list-objects --bucket hello-world --profile basics (run this command if you want more detailed and output in JSON format)
+
+		This command will give you a list of all buckets in AWS S3:
+		# aws s3 ls
+		
+		This command will give you a list of all top-level objects inside an AWS S3 bucket:
+		# aws s3 ls bucket-name
+		
+		This command will give you a list of ALL objects inside an AWS S3 bucket:
+		# aws s3 ls bucket-name --recursive
+		
+		This command will place a list of ALL inside an AWS S3 bucket... inside a text file in your current directory:
+		# aws s3 ls bucket-name --recursive | cat >> file-name.txt
+
+
+4. Retrieve content stored in the text file "flag" on the S3 Bucket "hello-world".
+
+# aws --endpoint http://192.X.Y.3:9000 s3api get-object --bucket hello-world --key flag outfile --profile basics
+
+or 
+
+# aws --endpoint http://192.X.Y.3:9000 s3 cp s3://hello-world/flag flag --profile basics
+
+Now you get your flag for the machine.
+
+
+5. Upload a file to S3 bucket "hello-world" with the content "Hello World".
+
+# echo "hello-world" > test.txt
+
+now we can use s3 cp command
+
+# aws --endpoint http://192.X.Y.3:9000 s3 cp test.txt s3://hello-world/test2.txt --profile basics
+or
+# 
+
+6. Is Object listing allowed for anonymous users on the S3 Bucket "welcome"?
+# curl http://192.X.Y.3:9000/welcome
+You can see access id denied.
+Get bucket polict
+# aws --endpoint http://192.X.Y.3:9000 s3api get-bucket-policy --bucket welcome --profile basics
+
+
+7. Modify the Bucket policy on S3 Bucket "welcome" to list the objects present in it.
+go to aws policy generator and generate your policy then save it to a json file.
+# aws --endpoint http://192.X.Y.3:9000 s3api put-bucket-policy --policy file:///root/policy.json --bucket welcome --profile basics
+now run
+# curl http://192.X.Y.3:9000/welcome
+you will be able to list all object as anonymous users.
+
+
+8. Delete the file "welcome" from the S3 Bucket "hello-world".
+
+# aws --endpoint http://192.X.Y.3:9000 s3api delete-object --bucket hello-world --key welcome --profile basics
+or
+# aws --endpoint http://192.X.Y.3:9000 s3 rm s3://hello-world/test2.txt --profile basics
+
