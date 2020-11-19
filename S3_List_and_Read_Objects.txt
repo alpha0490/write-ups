@@ -1,0 +1,23 @@
+S3 List and Read Objects(Attackdefense.com)
+
+so, initially I know the 
+
+nmap -sV 192.X.Y.3
+you will know the port on which s3 is working.
+9000 again.
+
+
+to access the s3 I used
+# curl http://192.X.Y.3:9000/public | python -m json.tool
+but there was no json output
+
+I was getting the output but it was not sorted.How to pretty print XML from the command line?
+xmllint is a command line XML tool and is included in libxml2 
+
+# curl http://192.231.92.3:9000/public | xmllint --format -
+
+now check the output and see where the flag is stored.
+use
+# curl http://192.X.Y.3:9000/public/Desktop/flag | xmllint --format -
+
+to get your flag
